@@ -7,45 +7,51 @@ Pkgsrc, made simpler
 Requires
 --------
 
-[IEEE Std 1003.1-2008](http://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html) compliant /bin/sh.
+ * [IEEE Std 1003.1-2008](http://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html) compliant `/bin/sh`
 
-Pkgsrc installed at /usr/pkgsrc.
+ * Pkgsrc installed at /usr/pkgsrc
 
-Pkg_info installed.
+ * Pkg_info
 
 
 Commands
 --------
 
-`pkg install`    `category` or `category/package`
+**pkg install** *category* or *category/package*
 
-  When used, `pkg` will first attempt to install a compiled package from /usr/pkgsrc/packages.
+  When used, `pkg` will attempt to install compiled packages from /usr/pkgsrc/packages.
 
-  If none can be found, the online repository will searched and the package will be downloaded and installed from there.
+  If none are found, the online repository will searched and packages will be downloaded and installed.
 
-  If a compiled package still isn't found, the source code will be downloaded and compiled and the compiled package will be installed.
+  If compiled packages aren't available, the packages' source code will be downloaded, compiled, and installed.
 
-`pkg installed`
+
+**pkg installed**
 
   This lists all packages installed.
 
-`pkg uninstall`  `category` or `category/package`
 
-  Uninstalls the entire `category` or just `category/package`.
+**pkg uninstall** *category* or *category/package*
 
-`pkg update`     `category` or `category/package`
+  Uninstalls the entire *category* or just *category/package*.
 
-  Updates the entire `category` or just `category/package`.
 
-`pkg available`  empty, `category`, or `category/package`
+**pkg update** *category* or *category/package*
 
-  Shows all categories, all packages in `category`, or the specific package at `category/package`.
+  Updates the entire *category* or just *category/package*.
 
-`pkg about`      `category` or `category/package`
 
-  Shows the description of the `category` or `category/package` specified.
+**pkg available** empty, *category*, or *category/package*
 
-`pkg help`
+  Shows all categories, all packages in *category*, or the specific package at *category/package*.
+
+
+**pkg about** *category* or *category/package*
+
+  Shows the description of the *category* or *category/package* specified.
+
+
+**pkg help**
 
   Shows a condensed listing of commands.
 
