@@ -1,0 +1,78 @@
+#!/bin/sh
+
+pkgsrc=/usr/pkgsrc
+
+build () {
+	(
+		cd $1
+
+		cleanpkgs
+
+		bmake $2 2>&1 | tee build.log
+
+		cleanpkgs
+	)
+}
+
+cleanpkgs () {
+	rm -rf $pkgsrc/work
+}
+
+install () {
+	build $pkgsrc/$path bin-install
+}
+
+installed () {
+	pkg_info -Q PKGPATH '*' \
+	| sort
+}
+
+uninstall () {
+	build $pkgsrc/$path deinstall
+}
+
+update () {
+	build $pkgsrc/pkgtools/pkg_tarup install
+
+	build $pkgsrc/$path replace
+}
+
+available () {
+	ls $pkgsrc/$path
+}
+
+about () {
+	cat $pkgsrc/$path/DESCR
+}
+
+find () {
+	echo $pkgsrc/*/* \
+	| tr " " "\n" \
+	| grep -i $path \
+	| sed "s@$pkgsrc/@@"
+}
+
+help () {
+	echo -e "install\t\t<category[/package]>"
+	echo -e "installed"
+	echo -e "uninstall\t<category[/package]>"
+	echo -e "update\t\t<category[/package]>"
+	echo -e "available\t[category[/package]]"
+	echo -e "about\t\t<category[/package]>"
+	echo -e "help"
+}
+
+echo
+
+case $1 in
+	install)	path=$2		install		;;
+	installed)			installed	;;
+	uninstall)	path=$2		uninstall	;;
+	update)		path=$2		update		;;
+	available)	path=$2		available	;;
+	about)		path=$2		about		;;
+	find)		path=$2		find		;;
+	help|*)				help		;;
+esac
+
+echo
