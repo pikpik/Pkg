@@ -17,7 +17,7 @@ Pkg_info installed.
 Commands
 --------
 
-install    category or category/package
+`pkg install`    `category` or `category/package`
 
   When used, `pkg` will first attempt to install a compiled package from /usr/pkgsrc/packages.
 
@@ -25,29 +25,29 @@ install    category or category/package
 
   If a compiled package still isn't found, the source code will be downloaded and compiled and the compiled package will be installed.
 
-installed
+`pkg installed`
 
   This lists all packages installed.
 
-uninstall  category or category/package
+`pkg uninstall`  `category` or `category/package`
 
-  This command uninstalls the entire "category" or the specific "category/package" specified.
+  Uninstalls the entire `category` or just `category/package`.
 
-update     category or category/package
+`pkg update`     `category` or `category/package`
 
-  This command updates the entire "category" or the specific "category/package" specified.
+  Updates the entire `category` or just `category/package`.
 
-available  empty, category, or category/package
+`pkg available`  empty, `category`, or `category/package`
 
-  This command shows all categories, the packages in the given "category," or the specific package at "category/package."
+  Shows all categories, all packages in `category`, or the specific package at `category/package`.
 
-about      category or category/package
+`pkg about`      `category` or `category/package`
 
-  This command shows the entire "category" or the specific "category/package" specified.
+  Shows the description of the `category` or `category/package` specified.
 
-help
+`pkg help`
 
-  This command shows a condensed listing of commands.
+  Shows a condensed listing of commands.
 
 
 License
