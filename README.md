@@ -4,56 +4,54 @@ Pkg
 Pkgsrc, made simpler
 
 
-Requires
---------
-
- * [IEEE Std 1003.1-2008](http://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html) compliant `/bin/sh`
-
- * Pkgsrc installed at /usr/pkgsrc
-
- * Pkg_info
-
-
 Commands
 --------
 
-**pkg install** *category* or *category/package*
-
-  When used, `pkg` will attempt to install compiled packages from /usr/pkgsrc/packages.
-
-  If none are found, the online repository will searched and packages will be downloaded and installed.
-
-  If compiled packages aren't available, the packages' source code will be downloaded, compiled, and installed.
-
-
 **pkg installed**
 
-  This lists all packages installed.
+  Lists all packages installed.
 
 
-**pkg uninstall** *category* or *category/package*
+**pkg available**
 
-  Uninstalls the entire *category* or just *category/package*.
-
-
-**pkg update** *category* or *category/package*
-
-  Updates the entire *category* or just *category/package*.
+  Shows all packages in all categories.
 
 
-**pkg available** empty, *category*, or *category/package*
+**pkg install** *package*
 
-  Shows all categories, all packages in *category*, or the specific package at *category/package*.
+  When used, `pkg` will attempt to install the compiled package from /usr/pkgsrc/packages.
+
+  If one isn't found, the online repository will searched and the package will be downloaded and installed.
+
+  If a compiled package isn't available, the package's source code will be downloaded, compiled, and installed.
 
 
-**pkg about** *category* or *category/package*
+**pkg uninstall** *package*
 
-  Shows the description of the *category* or *category/package* specified.
+  Uninstalls the *package* specified.
+
+
+**pkg update** *package*
+
+  Updates the *package* specified.
+
+
+**pkg about** *package*
+
+  Shows the description of the *package* specified.
 
 
 **pkg help**
 
   Shows a condensed listing of commands.
+
+
+Requires
+--------
+
+ * [IEEE Std 1003.1-2008](http://pubs.opengroup.org/onlinepubs/9699919799/utilities/sh.html) compliant `/bin/sh`
+
+ * Pkgsrc installed at /usr/pkgsrc with `pkg_info` and `bmake`
 
 
 License

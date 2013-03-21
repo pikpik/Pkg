@@ -4,11 +4,15 @@ pkgsrc=/usr/pkgsrc
 
 build () {
 	(
-		cd $1
+		cd $pkgsrc/$1
 
 		cleanpkgs
 
 		bmake $2 2>&1 | tee build.log
+
+		echo
+		echo -e "\tA log is available $1/build.log."
+		echo
 
 		cleanpkgs
 	)
@@ -18,8 +22,74 @@ cleanpkgs () {
 	rm -rf $pkgsrc/work
 }
 
+installtools () {
+	if ! which pkg_tarup 1>/dev/null 2>/dev/null
+	then
+		echo "Pkg_tarup not found; installing."
+		echo
+		build pkgtools/pkg_tarup bin-install
+		echo
+	fi
+}
+
+packagesLikeName () {
+	available \
+	| grep -i "/*$1"
+}
+
+packagesByName () {
+	available \
+	| grep -i "/$1$"
+}
+
+count () {
+	wc -l \
+	| sed 's/ //g' \
+	| sed '/^ $/d'
+}
+
+suggestions () {
+	echo 'Did you mean one of these?'
+
+	echo
+
+	package=$1 find
+}
+
+useOrSuggest () {
+	next=$1
+	package=$2
+
+	if [ -f $pkgsrc/$package/DESCR ]
+	then
+		package=$package $next
+	else
+		matches=`packagesByName $package | count`
+		similarities=`packagesLikeName $package | count`
+
+		case "$matches" in
+			"0")
+				if [ $similarities = 0 ]
+				then echo 'No matching packages.'
+				else suggestions $package
+				fi
+			;;
+
+			"1")
+				package=`packagesByName $package`
+
+				package=$package $next
+			;;
+
+			*)
+				suggestions $package
+			;;
+		esac
+	fi
+}
+
 install () {
-	build $pkgsrc/$path bin-install
+	build $package bin-install
 }
 
 installed () {
@@ -28,51 +98,65 @@ installed () {
 }
 
 uninstall () {
-	build $pkgsrc/$path deinstall
+	build $package deinstall
 }
 
 update () {
-	build $pkgsrc/pkgtools/pkg_tarup install
+	installtools
 
-	build $pkgsrc/$path replace
+	build $package replace
 }
 
 available () {
-	ls $pkgsrc/$path
+	echo $pkgsrc/*/* \
+	| tr " " "\n" \
+	| sed "s@^$pkgsrc/@@" \
+	| sed '/^mk/d' \
+	| sed '/^doc/d' \
+	| sed '/^licenses/d' \
+	| sed '/^bootstrap/d' \
+	| sed '/^distfiles/d' \
+	| sed '/^packages/d' \
+	| sed '/Makefile$/d'
 }
 
 about () {
-	cat $pkgsrc/$path/DESCR
+	cat $pkgsrc/$package/DESCR
 }
 
 find () {
-	echo $pkgsrc/*/* \
-	| tr " " "\n" \
-	| grep -i $path \
-	| sed "s@$pkgsrc/@@"
+	available \
+	| grep -i $package
 }
 
 help () {
-	echo -e "install\t\t<category[/package]>"
 	echo -e "installed"
-	echo -e "uninstall\t<category[/package]>"
-	echo -e "update\t\t<category[/package]>"
-	echo -e "available\t[category[/package]]"
-	echo -e "about\t\t<category[/package]>"
+	echo -e "available"
+	echo -e "find\t\tpackage"
+	echo -e "install\t\tpackage"
+	echo -e "uninstall\tpackage"
+	echo -e "update\t\tpackage"
+	echo -e "about\t\tpackage"
 	echo -e "help"
+}
+
+options () {
+	case $1 in
+		installed)	installed			;;
+		available)	available			;;
+		install)	useOrSuggest $1 $2		;;
+		uninstall)	useOrSuggest $1 $2		;;
+		update)		useOrSuggest $1 $2		;;
+		about)		useOrSuggest $1 $2		;;
+		find)		package=$2 find			;;
+		help|*)		help				;;
+	esac
 }
 
 echo
 
-case $1 in
-	install)	path=$2		install		;;
-	installed)			installed	;;
-	uninstall)	path=$2		uninstall	;;
-	update)		path=$2		update		;;
-	available)	path=$2		available	;;
-	about)		path=$2		about		;;
-	find)		path=$2		find		;;
-	help|*)				help		;;
-esac
+installtools
+
+options $@
 
 echo
