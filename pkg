@@ -21,33 +21,15 @@ cleanpkgs () {
 	rm -rf $pkgsrc/work
 }
 
-installPkgTarup () {
+needsPkgTarup () {
 	if ! which pkg_tarup 1>/dev/null 2>/dev/null
 	then
-		echo 'Pkg_tarup not found.'
+		echo 'Please install pkg_tarup.'
 		echo
-		echo 'It handles package removal for updates.'
-		echo
-		echo 'Install? (Yes/No)'
+		echo "It's needed for removing and updating packages."
 		echo
 
-		echo -n "> ";
-
-		read answer
-
-		echo
-
-		if [ ! `echo $answer | grep -i "y"` ]
-		then
-			echo 'Update canceled.'
-			echo
-
-			exit
-		fi
-
-		build pkgtools/pkg_tarup bin-install
-
-		echo
+		exit
 	fi
 }
 
@@ -108,9 +90,6 @@ useOrSuggest () {
 				;;
 
 				1)
-					echo "$matches"
-					echo
-
 					package=$matches $next
 				;;
 
@@ -123,9 +102,6 @@ useOrSuggest () {
 		;;
 
 		1)
-			echo "$matches"
-			echo
-
 			package=$matches $next
 		;;
 
@@ -138,6 +114,9 @@ useOrSuggest () {
 }
 
 install () {
+	echo "Installing $package..."
+	echo
+
 	build $package bin-install
 }
 
@@ -147,11 +126,17 @@ installed () {
 }
 
 uninstall () {
+	echo "Uninstalling $package..."
+	echo
+
 	build $package deinstall
 }
 
 update () {
-	installPkgTarup
+	needsPkgTarup
+
+	echo "Updating $package..."
+	echo
 
 	build $package replace
 }
