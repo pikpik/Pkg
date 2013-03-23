@@ -7,17 +7,17 @@ Pkgsrc, made simpler
 Commands
 --------
 
-**pkg installed**
+**pkg installed** or **pkg ind**
 
   Lists all packages installed.
 
 
-**pkg available**
+**pkg available** or **pkg av**
 
   Shows all packages in all categories.
 
 
-**pkg install** *package*
+**pkg install** or **pkg in** *package*
 
   When used, `pkg` will attempt to install the compiled package from /usr/pkgsrc/packages.
 
@@ -26,22 +26,27 @@ Commands
   If a compiled package isn't available, the package's source code will be downloaded, compiled, and installed.
 
 
-**pkg uninstall** *package*
+**pkg uninstall** or **pkg un** *package*
 
   Uninstalls the *package* specified.
 
 
-**pkg update** *package*
+**pkg update** or **pkg up** *package*
 
   Updates the *package* specified.
 
 
-**pkg about** *package*
+**pkg search** or **pkg s** *package*
 
-  Shows the description of the *package* specified.
+  Finds the full names of packages matching the *package* name specified.
 
 
-**pkg help**
+**pkg about** or **pkg a** *package*
+
+  Describes the *package* specified.
+
+
+**pkg help** or **pkg h**
 
   Shows a condensed listing of commands.
 

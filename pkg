@@ -12,7 +12,6 @@ build () {
 
 		echo
 		echo -e "\tA log is available $1/build.log."
-		echo
 
 		cleanpkgs
 	)
@@ -22,12 +21,32 @@ cleanpkgs () {
 	rm -rf $pkgsrc/work
 }
 
-installtools () {
+installPkgTarup () {
 	if ! which pkg_tarup 1>/dev/null 2>/dev/null
 	then
-		echo "Pkg_tarup not found; installing."
+		echo 'Pkg_tarup not found.'
 		echo
+		echo 'It handles package removal for updates.'
+		echo
+		echo 'Install? (Yes/No)'
+		echo
+
+		echo -n "> ";
+
+		read answer
+
+		echo
+
+		if [ ! `echo $answer | grep -i "y"` ]
+		then
+			echo 'Update canceled.'
+			echo
+
+			exit
+		fi
+
 		build pkgtools/pkg_tarup bin-install
+
 		echo
 	fi
 }
@@ -43,49 +62,79 @@ packagesByName () {
 }
 
 count () {
-	wc -l \
-	| sed 's/ //g' \
-	| sed '/^ $/d'
+	sed '/^$/d' \
+	| wc -l \
+	| sed 's/ //g'
 }
 
-suggestions () {
-	echo 'Did you mean one of these?'
+optionExists () {
+	if [ "x$package" = "x" ]
+	then
+		echo "Please specify a package."
+		echo
 
-	echo
-
-	package=$1 find
+		exit 1
+	fi
 }
 
 useOrSuggest () {
 	next=$1
 	package=$2
 
+	optionExists $package || exit
+
 	if [ -f $pkgsrc/$package/DESCR ]
 	then
 		package=$package $next
-	else
-		matches=`packagesByName $package | count`
-		similarities=`packagesLikeName $package | count`
 
-		case "$matches" in
-			"0")
-				if [ $similarities = 0 ]
-				then echo 'No matching packages.'
-				else suggestions $package
-				fi
-			;;
+		echo
 
-			"1")
-				package=`packagesByName $package`
-
-				package=$package $next
-			;;
-
-			*)
-				suggestions $package
-			;;
-		esac
+		exit
 	fi
+
+	matches=`packagesByName $package`
+
+	number=`echo -e "$matches" | count`
+
+	case $number in
+		0)
+			matches=`packagesLikeName $package`
+
+			number=`echo -e "$matches" | count`
+
+			case $number in
+				0)
+					echo 'Not found.'
+				;;
+
+				1)
+					echo "$matches"
+					echo
+
+					package=$matches $next
+				;;
+
+				*)
+					echo 'Did you mean one of these?'
+					echo
+					echo -e "$matches"
+				;;
+			esac
+		;;
+
+		1)
+			echo "$matches"
+			echo
+
+			package=$matches $next
+		;;
+
+		*)
+			echo 'Did you mean one of these?'
+			echo
+			echo -e "$packages"
+		;;
+	esac
 }
 
 install () {
@@ -102,7 +151,7 @@ uninstall () {
 }
 
 update () {
-	installtools
+	installPkgTarup
 
 	build $package replace
 }
@@ -110,52 +159,56 @@ update () {
 available () {
 	echo $pkgsrc/*/* \
 	| tr " " "\n" \
-	| sed "s@^$pkgsrc/@@" \
-	| sed '/^mk/d' \
-	| sed '/^doc/d' \
-	| sed '/^licenses/d' \
-	| sed '/^bootstrap/d' \
-	| sed '/^distfiles/d' \
-	| sed '/^packages/d' \
-	| sed '/Makefile$/d'
+	| sed "
+		s@^$pkgsrc/@@
+		/^mk/d
+		/^doc/d
+		/^licenses/d
+		/^bootstrap/d
+		/^distfiles/d
+		/^packages/d
+		/^regress/d
+		/^templates/d
+		/Makefile$/d
+	"
 }
 
 about () {
 	cat $pkgsrc/$package/DESCR
 }
 
-find () {
+search () {
+	optionExists $package || exit
+ 
 	available \
 	| grep -i $package
 }
 
 help () {
-	echo -e "installed"
-	echo -e "available"
-	echo -e "find\t\tpackage"
-	echo -e "install\t\tpackage"
-	echo -e "uninstall\tpackage"
-	echo -e "update\t\tpackage"
-	echo -e "about\t\tpackage"
-	echo -e "help"
+	echo -e "ind\tinstalled"
+	echo -e "av\tavailable"
+	echo -e "in\tinstall\t\tpackage"
+	echo -e "un\tuninstall\tpackage"
+	echo -e "up\tupdate\t\tpackage"
+	echo -e "s\tsearch\t\tpackage"
+	echo -e "a\tabout\t\tpackage"
+	echo -e "h\thelp"
 }
 
 options () {
 	case $1 in
-		installed)	installed			;;
-		available)	available			;;
-		install)	useOrSuggest $1 $2		;;
-		uninstall)	useOrSuggest $1 $2		;;
-		update)		useOrSuggest $1 $2		;;
-		about)		useOrSuggest $1 $2		;;
-		find)		package=$2 find			;;
-		help|*)		help				;;
+		ind|installed)	installed			;;
+		av|available)	available			;;
+		in|install)	useOrSuggest install $2		;;
+		un|uninstall)	useOrSuggest uninstall $2	;;
+		up|update)	useOrSuggest update $2		;;
+		s|search)	package=$2 search		;;
+		a|about)	useOrSuggest about $2		;;
+		h|help|*)	help				;;
 	esac
 }
 
 echo
-
-installtools
 
 options $@
 
